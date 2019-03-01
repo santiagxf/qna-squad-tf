@@ -27,8 +27,7 @@ import tensorflow as tf
 
 from qa_model import QAModel
 from vocab import get_glove
-from official_eval_helper import get_json_data, generate_answers, generate_answers_prob
-
+from official_eval_helper import get_json_data, generate_answers, generate_answers_prob, get_question_context_data
 
 logging.basicConfig(level=logging.INFO)
 
@@ -92,6 +91,8 @@ tf.app.flags.DEFINE_string("data_dir", DEFAULT_DATA_DIR, "Where to find preproce
 tf.app.flags.DEFINE_string("ckpt_load_dir", "", "For official_eval mode, which directory to load the checkpoint fron. You need to specify this for official_eval mode.")
 tf.app.flags.DEFINE_string("json_in_path", "", "For official_eval mode, path to JSON input file. You need to specify this for official_eval_mode.")
 tf.app.flags.DEFINE_string("json_out_path", "predictions.json", "Output path for official_eval mode. Defaults to predictions.json")
+tf.app.flags.DEFINE_string("question", "", "The question to ask")
+tf.app.flags.DEFINE_string("context_json_file", "", "the context for the question")
 
 FLAGS = tf.app.flags.FLAGS
 os.environ["CUDA_VISIBLE_DEVICES"] = str(FLAGS.gpu)
@@ -226,6 +227,7 @@ def main(unused_argv):
         if FLAGS.context_json_file == "":
             raise Exception("For score mode, you need to specify --context_json_file")
 
+        print("Encoding question and context")
         # Read the JSON data from file
         qn_uuid_data, context_token_data, qn_token_data = get_question_context_data(FLAGS.question, FLAGS.context_json_file)
 

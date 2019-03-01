@@ -24,6 +24,7 @@ from tqdm import tqdm
 import numpy as np
 from six.moves import xrange
 from nltk.tokenize import TreebankWordTokenizer
+from nltk.tokenize.treebank import TreebankWordDetokenizer
 
 from preprocessing.squad_preprocess import data_from_json, tokenize
 from vocab import UNK_ID, PAD_ID
@@ -164,7 +165,7 @@ def preprocess_dataset(dataset):
         article_paragraphs = dataset['data'][articles_id]['paragraphs']
         for pid in range(len(article_paragraphs)):
 
-            context = str(article_paragraphs[pid]['context']) # string
+            context = str(article_paragraphs[pid]["context"]) # string
 
             # The following replacements are suggested in the paper
             # BidAF (Seo et al., 2016)
@@ -196,7 +197,7 @@ def preprocess_dataset(dataset):
 def get_question_context_data(question_string, context_json_file):
 
     context_string = data_from_json(context_json_file)['context']
-    context = unicode(context_string) # string
+    context = str(context_string) # string
 
     # The following replacements are suggested in the paper
     # BidAF (Seo et al., 2016)
@@ -206,7 +207,7 @@ def get_question_context_data(question_string, context_json_file):
     context_tokens = tokenize(context) # list of strings (lowercase)
     context = context.lower()
 
-    question = unicode(question_string) # string
+    question = str(question_string) # string
     question_tokens = tokenize(question) # list of strings
 
     # also get the question_uuid
@@ -261,7 +262,7 @@ def generate_answers(session, model, word2id, qn_uuid_data, context_token_data, 
     data_size = len(qn_uuid_data)
     num_batches = ((data_size-1) / model.FLAGS.batch_size) + 1
     batch_num = 0
-    detokenizer = TreebankWordTokenizer()
+    detokenizer = TreebankWordDetokenizer()
 
     print("Generating answers...")
 
@@ -289,7 +290,7 @@ def generate_answers(session, model, word2id, qn_uuid_data, context_token_data, 
 
             # Detokenize and add to dict
             uuid = batch.uuids[ex_idx]
-            uuid2ans[uuid] = detokenizer.detokenize(pred_ans_tokens, return_str=True)
+            uuid2ans[uuid] = detokenizer.detokenize(pred_ans_tokens)
 
         batch_num += 1
 
