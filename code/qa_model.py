@@ -49,7 +49,7 @@ class QAModel(object):
           word2id: dictionary mapping word (string) to word idx (int)
           emb_matrix: numpy array shape (400002, embedding_size) containing pre-traing GloVe embeddings
         """
-        print "Initializing the QAModel..."
+        print("Initializing the QAModel...")
         self.FLAGS = FLAGS
         self.id2word = id2word
         self.word2id = word2id
@@ -426,7 +426,7 @@ class QAModel(object):
           param_norm: Global norm of the parameters
           gradient_norm: Global norm of the gradients
         """
-        # Match up our input data with the placeholders
+        # Match up our input data with the placeholder
         input_feed = {}
         input_feed[self.context_ids] = batch.context_ids
         input_feed[self.context_mask] = batch.context_mask
@@ -614,7 +614,7 @@ class QAModel(object):
         idx2char[CHAR_UNK_ID] = _CHAR_UNK
 
         ##Create reverse char2idx
-        char2idx = {v: k for k, v in idx2char.iteritems()}
+        char2idx = {v: k for k, v in idx2char.items()}
         return char2idx, idx2char, num_chars
 
     def word_to_token_ids(self, word):
@@ -716,7 +716,7 @@ class QAModel(object):
         # Calculate average loss
         total_num_examples = sum(batch_lengths)
         toc = time.time()
-        print "Computed dev loss over %i examples in %.2f seconds" % (total_num_examples, toc-tic)
+        print("Computed dev loss over %i examples in %.2f seconds" % (total_num_examples, toc-tic))
 
         # Overall loss is total loss divided by total number of examples
         dev_loss = sum(loss_per_batch) / float(total_num_examples)
@@ -817,7 +817,7 @@ class QAModel(object):
         # Print number of model parameters
         tic = time.time()
         params = tf.trainable_variables()
-        num_params = sum(map(lambda t: np.prod(tf.shape(t.value()).eval()), params))
+        num_params = sum(list(map(lambda t: np.prod(tf.shape(t.value()).eval()), params)))
         toc = time.time()
         logging.info("Number of params: %d (retrieval took %f secs)" % (num_params, toc - tic))
 
