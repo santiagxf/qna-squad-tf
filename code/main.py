@@ -220,6 +220,24 @@ def main(unused_argv):
                 f.write(unicode(json.dumps(answers_dict, ensure_ascii=False)))
                 print("Wrote predictions to %s" % FLAGS.json_out_path)
 
+    elif FLAGS.mode == "score":
+        if FLAGS.question == "":
+            raise Exception("For score mode, you need to specify --question")
+        if FLAGS.context_json_file == "":
+            raise Exception("For score mode, you need to specify --context_json_file")
+
+        # Read the JSON data from file
+        qn_uuid_data, context_token_data, qn_token_data = get_question_context_data(FLAGS.question, FLAGS.context_json_file)
+
+        with tf.Session(config=config) as sess:
+
+            # Load model from ckpt_load_dir
+            initialize_model(sess, qa_model, FLAGS.ckpt_load_dir, expect_exists=True)
+
+            # Get a predicted answer for each example in the data
+            # Return a mapping answers_dict from uuid to answer
+            answers_dict = generate_answers(sess, qa_model, word2id, qn_uuid_data, context_token_data, qn_token_data)
+            print(answers_dict)
 
     else:
         raise Exception("Unexpected value of FLAGS.mode: %s" % FLAGS.mode)

@@ -193,6 +193,26 @@ def preprocess_dataset(dataset):
 
     return qn_uuid_data, context_token_data, qn_token_data
 
+def get_question_context_data(question_string, context_json_file):
+
+    context_string = data_from_json(context_json_file)['context']
+    context = unicode(context_string) # string
+
+    # The following replacements are suggested in the paper
+    # BidAF (Seo et al., 2016)
+    context = context.replace("''", '" ')
+    context = context.replace("``", '" ')
+
+    context_tokens = tokenize(context) # list of strings (lowercase)
+    context = context.lower()
+
+    question = unicode(question_string) # string
+    question_tokens = tokenize(question) # list of strings
+
+    # also get the question_uuid
+    question_uuid = len(question_tokens)
+
+    return [question_uuid], [context_tokens], [question_tokens]
 
 def get_json_data(data_filename):
     """
